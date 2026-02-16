@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOrcamentos } from "@/modules/orcamento/orcamentoThunks";
@@ -19,12 +20,18 @@ export default function Home() {
     <main style={{ padding: 20 }}>
       <h1>Orçamentos</h1>
 
+      <Link href="/orcamentos/novo">
+        <button>Criar Novo Orçamento</button>
+      </Link>
+
       {loading && <p>Carregando...</p>}
 
       <ul>
-        {lista.map((o) => (
-          <li key={o.id}>
-            {o.numeroProtocolo} - {o.tipoOrcamento} - R$ {o.valorTotal}
+        {lista.map((orcamento) => (
+          <li key={orcamento.id}>
+            <Link href={`/orcamentos/${orcamento.id}`}>
+              {orcamento.numeroProtocolo} - {orcamento.tipoOrcamento} - R${orcamento.valorTotal}
+            </Link>
           </li>
         ))}
       </ul>

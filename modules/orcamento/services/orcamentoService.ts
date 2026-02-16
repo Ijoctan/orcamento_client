@@ -1,42 +1,64 @@
 import { api } from "@/core/api/axios";
-
-export interface Orcamento {
-  id: number;
-  numeroProtocolo: string;
-  tipoOrcamento: string;
-  valorTotal: number;
-  status: string;
-}
+import { handleApiError } from "@/core/utils/handleApiError";
+import type { Orcamento } from "../types/orcamento.types";
+import type {
+  CreateOrcamentoRequest,
+  UpdateOrcamentoRequest,
+} from "../types/orcamento.request";
 
 export const orcamentoService = {
-  listar: async (): Promise<Orcamento[]> => {
-    const response = await api.get("/orcamentos");
-    return response.data;
+  async listar(): Promise<Orcamento[]> {
+    try {
+      const response = await api.get<Orcamento[]>("/orcamentos");
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
   },
 
-  buscarPorId: async (id: number): Promise<Orcamento> => {
-    const response = await api.get(`/orcamentos/${id}`);
-    return response.data;
+  async buscarPorId(id: number): Promise<Orcamento> {
+    try {
+      const response = await api.get<Orcamento>(`/orcamentos/${id}`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
   },
 
-  criar: async (data: {
-    tipoOrcamento: string;
-    valorTotal: number;
-  }): Promise<Orcamento> => {
-    const response = await api.post("/orcamentos", data);
-    return response.data;
+  async criar(
+    data: CreateOrcamentoRequest
+  ): Promise<Orcamento> {
+    try {
+      const response = await api.post<Orcamento>("/orcamentos", data);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
   },
 
-  editar: async (
+  async editar(
     id: number,
-    data: { tipoOrcamento: string; valorTotal: number }
-  ): Promise<Orcamento> => {
-    const response = await api.put(`/orcamentos/${id}`, data);
-    return response.data;
+    data: UpdateOrcamentoRequest
+  ): Promise<Orcamento> {
+    try {
+      const response = await api.put<Orcamento>(
+        `/orcamentos/${id}`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
   },
 
-  finalizar: async (id: number): Promise<Orcamento> => {
-    const response = await api.put(`/orcamentos/${id}/finalizar`);
-    return response.data;
+  async finalizar(id: number): Promise<Orcamento> {
+    try {
+      const response = await api.put<Orcamento>(
+        `/orcamentos/${id}/finalizar`
+      );
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
   },
 };

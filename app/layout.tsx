@@ -1,4 +1,5 @@
 import StoreProvider from "@/core/store/provider";
+import GlobalAlert from "@/core/components/GlobalAlert";
 
 export default function RootLayout({
   children,
@@ -8,7 +9,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          <GlobalAlert />
+          {children}
+        </StoreProvider>
       </body>
     </html>
   );
