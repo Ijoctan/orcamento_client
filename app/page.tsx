@@ -1,38 +1,33 @@
 "use client";
 
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/core/store/store";
-import { setOrcamentos } from "@/modules/orcamento/orcamentoSlice";
+import { fetchOrcamentos } from "@/modules/orcamento/orcamentoThunks";
+import { RootState, AppDispatch } from "@/core/store/store";
 
 export default function Home() {
-  const dispatch = useDispatch();
-  const orcamentos = useSelector(
-    (state: RootState) => state.orcamento.lista
+  const dispatch = useDispatch<AppDispatch>();
+  const { lista, loading } = useSelector(
+    (state: RootState) => state.orcamento
   );
 
+  useEffect(() => {
+    dispatch(fetchOrcamentos());
+  }, [dispatch]);
+
   return (
-    <main style={{ padding: "20px" }}>
-      <h1>Sistema de Orçamentos</h1>
+    <main style={{ padding: 20 }}>
+      <h1>Orçamentos</h1>
 
-      <button
-        onClick={() =>
-          dispatch(
-            setOrcamentos([
-              {
-                id: 1,
-                numeroProtocolo: "1/2026-02",
-                tipoOrcamento: "Reforma",
-                valorTotal: 1000,
-                status: "ABERTO",
-              },
-            ])
-          )
-        }
-      >
-        Testar Redux
-      </button>
+      {loading && <p>Carregando...</p>}
 
-      <pre>{JSON.stringify(orcamentos, null, 2)}</pre>
+      <ul>
+        {lista.map((o) => (
+          <li key={o.id}>
+            {o.numeroProtocolo} - {o.tipoOrcamento} - R$ {o.valorTotal}
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }
