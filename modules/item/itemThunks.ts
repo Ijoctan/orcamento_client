@@ -1,7 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { handleApiError } from "@/core/utils/handleApiError";
 import { itemService } from "./services/itemService";
-import type { Item, CriarItemDTO, AtualizarItemDTO } from "./types/item.types";
+import type { Item} from "./types/item.types"
+import type { CriarItemDTO, AtualizarItemDTO } from "./types/item.dto"
 
 export const fetchItensPorOrcamento = createAsyncThunk<
   Item[],
@@ -38,3 +39,17 @@ export const updateItem = createAsyncThunk<
     return rejectWithValue(handleApiError(error));
   }
 });
+
+export const deleteItem = createAsyncThunk<
+  number,
+  { orcamentoId: number; itemId: number },
+  { rejectValue: string }
+>("item/delete", async ({ orcamentoId, itemId }, { rejectWithValue }) => {
+  try {
+    await itemService.excluir(orcamentoId, itemId);
+    return itemId; // devolve o id pra remover do state
+  } catch (error) {
+    return rejectWithValue(handleApiError(error));
+  }
+});
+

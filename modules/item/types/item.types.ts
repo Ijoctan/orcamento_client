@@ -12,16 +12,4 @@ export interface Item {
     quantidadeAcumulada: number;
   }
   
-  export type CriarItemDTO = {
-    descricao: string;
-    quantidade: number;
-    valorUnitario: number;
-  };
-  
-  export type AtualizarItemDTO = {
-    itemId: number;
-    descricao: string;
-    quantidade: number;
-    valorUnitario: number;
-  };
   

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { Item } from "./types/item.types";
-import { fetchItensPorOrcamento, createItem, updateItem } from "./itemThunks";
+import { fetchItensPorOrcamento, createItem, updateItem, deleteItem } from "./itemThunks";
 
 interface ItemState {
   lista: Item[];
@@ -59,7 +59,18 @@ const itemSlice = createSlice({
       })
       .addCase(updateItem.rejected, (state, action) => {
         state.error = action.payload ?? "Erro ao editar item";
+      })
+
+      .addCase(deleteItem.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(deleteItem.fulfilled, (state, action) => {
+        state.lista = state.lista.filter((i) => i.id !== action.payload);
+      })
+      .addCase(deleteItem.rejected, (state, action) => {
+        state.error = action.payload ?? "Erro ao excluir item";
       });
+      
   },
 });
 

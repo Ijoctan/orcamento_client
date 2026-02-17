@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { orcamentoService } from "@/modules/orcamento/services/orcamentoService";
 import { finalizeOrcamento } from "@/modules/orcamento/orcamentoThunks";
-import { fetchItensPorOrcamento } from "@/modules/item/itemThunks";
+import { fetchItensPorOrcamento, deleteItem } from "@/modules/item/itemThunks";
 
 import type { AppDispatch, RootState } from "@/core/store/store";
 
@@ -75,7 +75,21 @@ export default function DetalheOrcamento() {
                 {item.descricao} — Qtd: {item.quantidade} — 
                 Un R$: {item.valorUnitario} — 
                 Total R$: {item.valorTotal} — 
-                Qtd. acumulada: {item.quantidadeAcumulada}
+                Qtd. acumulada: {item.quantidadeAcumulada} —  
+                <button onClick={() => router.push(`/orcamentos/${orcamentoId}/itens/${item.id}/editar`)}>
+                  Editar
+                </button>
+                <button
+                  onClick={async () => {
+                    const ok = confirm("Deseja realmente excluir este item?");
+                    if (!ok) return;
+
+                    await dispatch(deleteItem({ orcamentoId, itemId: item.id })).unwrap();
+                  }}
+                >
+                  Excluir
+                </button>
+
               </li>
             ))}
           </ul>
@@ -85,6 +99,10 @@ export default function DetalheOrcamento() {
       <section style={{ marginTop: 24 }}>
         <button onClick={handleFinalizar}>
           Finalizar Orçamento
+        </button>
+
+        <button onClick={() => router.push(`/orcamentos/${orcamentoId}/itens/novo`)}>
+          Novo Item
         </button>
 
         <button onClick={() => router.push(`/orcamentos/${orcamentoId}/editar`)}>
