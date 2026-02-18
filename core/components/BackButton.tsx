@@ -1,5 +1,7 @@
 "use client";
 
+import { Button, Group, Container } from "@mantine/core";
+import { IconArrowLeft } from "@tabler/icons-react";
 import { useRouter, usePathname } from "next/navigation";
 
 export default function BackButton() {
@@ -11,10 +13,17 @@ export default function BackButton() {
   }
 
   return (
-    <button
-      onClick={() => router.back()}
-    >
-      Voltar
-    </button>
+    <Container size="xl">
+      <Group py="md" justify="flex-end">
+        <Button
+          leftSection={<IconArrowLeft size={16} />}
+          onClick={() => router.back()}
+          variant="light"
+          size="sm"
+        >
+          Voltar
+        </Button>
+      </Group>
+    </Container>
   );
 }

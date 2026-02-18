@@ -8,6 +8,7 @@ import type { AppDispatch } from "@/core/store/store";
 import { itemService } from "@/modules/item/services/itemService";
 import { updateItem } from "@/modules/item/itemThunks";
 import type { AtualizarItemDTO } from "@/modules/item/types/item.dto";
+import { Button, Container, NumberInput, Paper, Stack, TextInput, Title } from "@mantine/core";
 
 export default function EditarItemPage() {
   const params = useParams<{ id: string; itemId: string }>();
@@ -21,6 +22,7 @@ export default function EditarItemPage() {
   const [quantidade, setQuantidade] = useState<number>(0);
   const [valorUnitario, setValorUnitario] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!params?.id || !params?.itemId) {
@@ -48,6 +50,7 @@ export default function EditarItemPage() {
         setValorUnitario(Number(item.valorUnitario ?? 0));
       } catch (error) {
         console.error(error);
+        alert("Erro ao carregar item");
       } finally {
         setLoading(false);
       }
@@ -60,54 +63,86 @@ export default function EditarItemPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const dto: AtualizarItemDTO = {
-      itemId: itemId,
-      descricao,
-      quantidade,
-      valorUnitario,
-    };
+    if (!descricao.trim()) {
+      alert("Descrição é obrigatória");
+      return;
+    }
 
-    await dispatch(updateItem({ orcamentoId, dto })).unwrap();
-    router.push(`/orcamentos/${orcamentoId}`);
+    if (quantidade <= 0) {
+      alert("Quantidade deve ser maior que zero");
+      return;
+    }
+
+    if (valorUnitario <= 0) {
+      alert("Valor unitário deve ser maior que zero");
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      const dto: AtualizarItemDTO = {
+        itemId: itemId,
+        descricao,
+        quantidade,
+        valorUnitario,
+      };
+
+      await dispatch(updateItem({ orcamentoId, dto })).unwrap();
+      router.push(`/orcamentos/${orcamentoId}`);
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao salvar item");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) return <p>Carregando item...</p>;
 
   return (
-    <main style={{ padding: 20 }}>
-      <h1>Editar Item</h1>
+    <Container size="sm" py="xl">
+      <Stack gap="lg">
+        <Title order={2}>Editar Item</Title>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Descrição</label>
-          <input value={descricao} onChange={(e) => setDescricao(e.target.value)} required />
-        </div>
+        <Paper p="lg" radius="md" withBorder>
+          <form onSubmit={handleSubmit}>
+            <Stack gap="md">
+              <TextInput
+                label="Descrição"
+                placeholder="Ex: Cimento CP32"
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
+                required
+              />
 
-        <div>
-          <label>Quantidade</label>
-          <input
-            type="number"
-            value={quantidade}
-            onChange={(e) => setQuantidade(Number(e.target.value))}
-            required
-          />
-        </div>
+              <NumberInput
+                label="Quantidade"
+                placeholder="0"
+                value={quantidade}
+                onChange={(val) => setQuantidade(Number(val) || 0)}
+                min={0}
+                required
+              />
 
-        <div>
-          <label>Valor Unitário</label>
-          <input
-            type="number"
-            value={valorUnitario}
-            onChange={(e) => setValorUnitario(Number(e.target.value))}
-            required
-          />
-        </div>
+              <NumberInput
+                label="Valor Unitário (R$)"
+                placeholder="0,00"
+                value={valorUnitario}
+                onChange={(val) => setValorUnitario(Number(val) || 0)}
+                min={0}
+                step={0.01}
+                decimalScale={2}
+                required
+              />
 
-        <button type="submit">Salvar</button>
-        <button type="button" onClick={() => router.back()}>
-          Cancelar
-        </button>
-      </form>
-    </main>
+              <Button type="submit" loading={saving}>
+                Salvar Item
+              </Button>
+            </Stack>
+          </form>
+        </Paper>
+      </Stack>
+    </Container>
   );
 }

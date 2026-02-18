@@ -47,7 +47,7 @@ export const deleteItem = createAsyncThunk<
 >("item/delete", async ({ orcamentoId, itemId }, { rejectWithValue }) => {
   try {
     await itemService.excluir(orcamentoId, itemId);
-    return itemId; // devolve o id pra remover do state
+    return itemId; 
   } catch (error) {
     return rejectWithValue(handleApiError(error));
   }

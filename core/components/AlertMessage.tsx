@@ -1,41 +1,40 @@
+"use client";
+
+import { Alert, Container } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
+import { useState, useEffect } from "react";
+
 interface AlertMessageProps {
   message: string | null;
   onClose?: () => void;
 }
 
 export default function AlertMessage({ message, onClose }: AlertMessageProps) {
-  if (!message) return null;
+  const [isVisible, setIsVisible] = useState(!!message);
+
+  useEffect(() => {
+    setIsVisible(!!message);
+  }, [message]);
+
+  if (!isVisible || !message) return null;
+
+  const handleClose = () => {
+    setIsVisible(false);
+    onClose?.();
+  };
 
   return (
-    <div
-      style={{
-        backgroundColor: "#ffe5e5",
-        color: "#b30000",
-        padding: "12px",
-        borderRadius: "6px",
-        marginBottom: "16px",
-        border: "1px solid #ffcccc",
-        position: "relative",
-      }}
-    >
-      <button
-        aria-label="Fechar alerta"
-        onClick={onClose}
-        style={{
-          position: "absolute",
-          right: 8,
-          top: 8,
-          background: "transparent",
-          border: "none",
-          fontSize: 16,
-          cursor: "pointer",
-          color: "#b30000",
-        }}
+    <Container size="xl" py="md">
+      <Alert
+        icon={<IconAlertCircle />}
+        title="Erro"
+        color="red"
+        withCloseButton
+        onClose={handleClose}
       >
-        ×
-      </button>
-      <div>{message}</div>
-    </div>
+        {message}
+      </Alert>
+    </Container>
   );
 }
   

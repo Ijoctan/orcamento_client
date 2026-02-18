@@ -8,6 +8,18 @@ import { orcamentoService } from "@/modules/orcamento/services/orcamentoService"
 import { tipoOrcamentoService } from "@/modules/tipoOrcamento/services/tipoOrcamentoService";
 import type { TipoOrcamento } from "@/modules/tipoOrcamento/types/tipoOrcamento.types";
 import type { AppDispatch } from "@/core/store/store";
+import {
+  Container,
+  Title,
+  Stack,
+  Select,
+  NumberInput,
+  Button,
+  Group,
+  Paper,
+  Loader,
+  Center,
+} from "@mantine/core";
 
 export default function EditOrcamentoPage() {
   const { id } = useParams();
@@ -15,28 +27,34 @@ export default function EditOrcamentoPage() {
   const dispatch = useDispatch<AppDispatch>();
 
   const [tipos, setTipos] = useState<TipoOrcamento[]>([]);
-  const [tipoId, setTipoId] = useState<number | null>(null);
-  const [valorTotal, setValorTotal] = useState<number>(0);
+  const [tipoId, setTipoId] = useState<string | null>(null);
+  const [valorTotal, setValorTotal] = useState<number | string>("");
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     async function carregar() {
-      const [orcamentoData, tiposData] = await Promise.all([
-        orcamentoService.buscarPorId(Number(id)),
-        tipoOrcamentoService.listar(),
-      ]);
+      try {
+        const [orcamentoData, tiposData] = await Promise.all([
+          orcamentoService.buscarPorId(Number(id)),
+          tipoOrcamentoService.listar(),
+        ]);
 
-      setTipos(tiposData.filter((t) => t.ativo));
+        setTipos(tiposData.filter((t) => t.ativo));
 
-      const t = (orcamentoData as any).tipoOrcamento;
-      if (t && typeof t === "object") {
-        setTipoId(Number(t.id ?? t.tipoOrcamentoId ?? null));
-      } else if (typeof t === "number") {
-        setTipoId(t);
-      } else {
-        setTipoId(null);
+        const t = (orcamentoData as any).tipoOrcamento;
+        if (t && typeof t === "object") {
+          setTipoId(String(t.id ?? t.tipoOrcamentoId ?? null));
+        } else if (typeof t === "number") {
+          setTipoId(String(t));
+        } else {
+          setTipoId(null);
+        }
+
+        setValorTotal(orcamentoData.valorTotal);
+      } finally {
+        setLoading(false);
       }
-
-      setValorTotal(orcamentoData.valorTotal);
     }
 
     carregar();
@@ -44,54 +62,79 @@ export default function EditOrcamentoPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
 
     try {
       await dispatch(
         updateOrcamento({
           id: Number(id),
-          tipoOrcamentoId: tipoId ?? 1,
+          tipoOrcamentoId: tipoId ? Number(tipoId) : 0,
           valorTotal: Number(valorTotal),
         })
       ).unwrap();
 
       router.push(`/orcamentos/${id}`);
-    } catch {
-
+    } finally {
+      setSubmitting(false);
     }
   };
 
+  if (loading) {
+    return (
+      <Center py="xl">
+        <Loader />
+      </Center>
+    );
+  }
+
   return (
-    <main style={{ padding: 20 }}>
-      <h1>Editar Orçamento</h1>
+    <Container size="sm" py="xl">
+      <Stack gap="lg">
+        <Title order={1}>Editar Orçamento</Title>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Tipo de Orçamento:</label>
-          <select
-            value={tipoId ?? ""}
-            onChange={(e) => setTipoId(Number(e.target.value))}
-            required
-          >
-            <option value="">Selecione</option>
-            {tipos.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.descricao}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Paper p="lg" radius="md" withBorder>
+          <form onSubmit={handleSubmit}>
+            <Stack gap="lg">
+              <Select
+                label="Tipo de Orçamento"
+                placeholder="Selecione um tipo"
+                data={tipos.map((tipo) => ({
+                  value: String(tipo.id),
+                  label: tipo.descricao,
+                }))}
+                value={tipoId}
+                onChange={setTipoId}
+                required
+                searchable
+              />
 
-        <div>
-          <label>Valor Total:</label>
-          <input
-            type="number"
-            value={valorTotal}
-            onChange={(e) => setValorTotal(Number(e.target.value))}
-          />
-        </div>
+              <NumberInput
+                label="Valor Total"
+                placeholder="0.00"
+                min={0}
+                step={0.01}
+                value={valorTotal}
+                onChange={setValorTotal}
+                required
+                decimalSeparator=","
+              />
 
-        <button type="submit">Salvar</button>
-      </form>
-    </main>
+              <Group justify="flex-end">
+                <Button
+                  variant="default"
+                  onClick={() => router.back()}
+                  disabled={submitting}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit" loading={submitting}>
+                  Salvar
+                </Button>
+              </Group>
+            </Stack>
+          </form>
+        </Paper>
+      </Stack>
+    </Container>
   );
 }
