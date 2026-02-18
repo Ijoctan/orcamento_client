@@ -107,7 +107,7 @@ export default function DetalheOrcamento() {
           </ul>           
         )}
         <button onClick={() => router.push(`/orcamentos/${orcamentoId}/itens/novo`)}>
-          Nova Medição
+          Novo Item
         </button>
       </section>
 
@@ -176,10 +176,7 @@ export default function DetalheOrcamento() {
         <button onClick={() => router.push(`/orcamentos/${orcamentoId}/editar`)}>
           Editar Orçamento
         </button>
-
-        <button onClick={() => router.push("/")}>
-          Voltar
-        </button>
+        
       </section>
     </main>
   );

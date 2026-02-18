@@ -39,8 +39,6 @@ export default function DetalheMedicaoPage() {
       {medicao.status === "ABERTA" && (
         <button onClick={handleValidar}>Validar</button>
       )}
-
-      <button onClick={() => router.back()}>Voltar</button>
     </main>
   );
 }

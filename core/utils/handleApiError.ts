@@ -1,5 +1,8 @@
 export function handleApiError(error: any): string {
-    if (error?.response) {
+  
+  if (typeof error === "string") return error;
+
+  if (error?.response) {
       const data = error.response.data;
   
       if (typeof data === "string") {
