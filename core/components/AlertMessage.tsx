@@ -34,7 +34,6 @@ export default function AlertMessage({ message, onClose }: AlertMessageProps) {
       >
         ×
       </button>
-
       <div>{message}</div>
     </div>
   );
