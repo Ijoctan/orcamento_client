@@ -1,19 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { tipoOrcamentoService } from "@/modules/tipoOrcamento/services/tipoOrcamentoService";
+import type { TipoOrcamento } from "@/modules/tipoOrcamento/types/tipoOrcamento.types";
 import { orcamentoService } from "@/modules/orcamento/services/orcamentoService";
 
 export default function NovoOrcamento() {
   const router = useRouter();
-  const [tipoOrcamento, setTipoOrcamento] = useState("");
   const [valorTotal, setValorTotal] = useState("");
+  const [tipos, setTipos] = useState<TipoOrcamento[]>([]);
+  const [tipoId, setTipoId] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function carregarTipos() {
+      const data = await tipoOrcamentoService.listar();
+      setTipos(data.filter(t => t.ativo));
+    }
+    carregarTipos();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     await orcamentoService.criar({
-      tipoOrcamento,
+      tipoOrcamentoId: tipoId ?? 1,
       valorTotal: Number(valorTotal),
     });
 
@@ -26,13 +37,20 @@ export default function NovoOrcamento() {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Tipo:</label>
-          <input
-            value={tipoOrcamento}
-            onChange={(e) => setTipoOrcamento(e.target.value)}
-          />
+          <label>Tipo de Orçamento</label>
+          <select
+            value={tipoId ?? ""}
+            onChange={(e) => setTipoId(Number(e.target.value))}
+            required
+          >
+            <option value="">Selecione</option>
+            {tipos.map((tipo) => (
+              <option key={tipo.id} value={tipo.id}>
+                {tipo.descricao}
+              </option>
+            ))}
+          </select>
         </div>
-
         <div>
           <label>Valor Total:</label>
           <input

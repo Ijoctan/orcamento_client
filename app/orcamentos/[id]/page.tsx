@@ -65,8 +65,12 @@ export default function DetalheOrcamento() {
 
       <section style={{ marginBottom: 24 }}>
         <p><strong>Protocolo:</strong> {orcamento.numeroProtocolo}</p>
-        <p><strong>Tipo:</strong> {orcamento.tipoOrcamento}</p>
+        <p>
+          <strong>Tipo:</strong>{" "}
+          {orcamento.tipoOrcamento?.descricao}
+        </p>
         <p><strong>Valor Total:</strong> R$ {orcamento.valorTotal}</p>
+        <p><strong>Data Criação:</strong> {orcamento.dataCriacao}</p>
         <p><strong>Status:</strong> {orcamento.status}</p>
       </section>
 
@@ -98,11 +102,13 @@ export default function DetalheOrcamento() {
                 >
                   Excluir
                 </button>
-
               </li>
             ))}
-          </ul>
+          </ul>           
         )}
+        <button onClick={() => router.push(`/orcamentos/${orcamentoId}/itens/novo`)}>
+          Nova Medição
+        </button>
       </section>
 
       <section style={{ marginTop: 32 }}>
@@ -153,7 +159,6 @@ export default function DetalheOrcamento() {
             ))}
           </ul>
         )}
-
         <button
           onClick={() =>
             router.push(`/orcamentos/${orcamentoId}/medicoes/nova`)
@@ -168,12 +173,8 @@ export default function DetalheOrcamento() {
           Finalizar Orçamento
         </button>
 
-        <button onClick={() => router.push(`/orcamentos/${orcamentoId}/itens/novo`)}>
-          Novo Item
-        </button>
-
         <button onClick={() => router.push(`/orcamentos/${orcamentoId}/editar`)}>
-          Editar
+          Editar Orçamento
         </button>
 
         <button onClick={() => router.push("/")}>

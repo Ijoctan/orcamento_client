@@ -1,9 +1,10 @@
 export interface CreateOrcamentoRequest {
-    tipoOrcamento: string;
+    tipoOrcamentoId: number;
     valorTotal: number;
-}
+}   
   
 export interface UpdateOrcamentoRequest {
-    tipoOrcamento: string;
+    id: number;
+    tipoOrcamentoId: number;
     valorTotal: number;
 }

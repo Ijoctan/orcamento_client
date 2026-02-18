@@ -30,7 +30,7 @@ export default function Home() {
         {lista.map((orcamento) => (
           <li key={orcamento.id}>
             <Link href={`/orcamentos/${orcamento.id}`}>
-              {orcamento.numeroProtocolo} - {orcamento.tipoOrcamento} - R${orcamento.valorTotal}
+              {orcamento.numeroProtocolo} | {typeof orcamento.tipoOrcamento === "object" ? orcamento.tipoOrcamento.descricao : orcamento.tipoOrcamento} | R${orcamento.valorTotal} | Criado em: {orcamento.dataCriacao}
             </Link>
           </li>
         ))}

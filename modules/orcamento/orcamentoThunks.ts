@@ -2,9 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { orcamentoService } from "./services/orcamentoService";
 import { handleApiError } from "@/core/utils/handleApiError";
 import type { Orcamento } from "./types/orcamento.types";
-
-type CriarOrcamentoDTO = { tipoOrcamento: string; valorTotal: number };
-type AtualizarOrcamentoDTO = { id: number; tipoOrcamento: string; valorTotal: number };
+import type { CreateOrcamentoRequest, UpdateOrcamentoRequest } from "./types/orcamento.request";
 
 export const fetchOrcamentos = createAsyncThunk<
   Orcamento[],
@@ -32,7 +30,7 @@ export const fetchOrcamentoById = createAsyncThunk<
 
 export const createOrcamento = createAsyncThunk<
   Orcamento,
-  CriarOrcamentoDTO,
+  CreateOrcamentoRequest,
   { rejectValue: string }
 >("orcamento/create", async (data, { rejectWithValue }) => {
   try {
@@ -42,13 +40,14 @@ export const createOrcamento = createAsyncThunk<
   }
 });
 
+
 export const updateOrcamento = createAsyncThunk<
   Orcamento,
-  AtualizarOrcamentoDTO,
+  UpdateOrcamentoRequest,
   { rejectValue: string }
->("orcamento/update", async ({ id, tipoOrcamento, valorTotal }, { rejectWithValue }) => {
+>("orcamento/update", async ({ id, tipoOrcamentoId, valorTotal }, { rejectWithValue }) => {
   try {
-    return await orcamentoService.editar(id, { tipoOrcamento, valorTotal });
+    return await orcamentoService.editar(id, { id, tipoOrcamentoId, valorTotal });
   } catch (error) {
     return rejectWithValue(handleApiError(error));
   }
